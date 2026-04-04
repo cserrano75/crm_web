@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRM Industrial - Gestión de Clientes</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    
+    <style>
+        body { background-color: #f8f9fa; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        /* Estilo para el menú lateral (Sidebar) */
+        .sidebar { min-height: 100vh; background-color: #212529; color: white; }
+        .nav-link { color: rgba(255,255,255,.75); transition: 0.3s; }
+        .nav-link:hover { color: white; background-color: rgba(255,255,255,.1); }
+        .nav-link.active { color: white; background-color: #0d6efd; }
+    </style>
+</head>
+<body>
+
+<div class="container-fluid">
+    <div class="row">
+        <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse p-3">
+            <h4 class="text-center mb-4"><i class="bi bi-factory"></i> CRM de Gestión</h4>
+            <hr>
+            <ul class="nav flex-column gap-2">
+                <li class="nav-item">
+                    <a class="nav-link active rounded" href="#"><i class="bi bi-people me-2"></i> Clientes</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link rounded" href="#"><i class="bi bi-calculator me-2"></i> Calculadora UF</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link rounded" href="#"><i class="bi bi-file-earmark-pdf me-2"></i> Presupuestos</a>
+                </li>
+            </ul>
+        </nav>
+
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">Listado de Clientes</h1>
+                
+                <form action="/" method="GET" class="d-flex me-2">
+                    <div class="input-group">
+                        <input type="text" name="q" class="form-control form-control-sm" placeholder="Buscar empresa o nombre..." value="{{ request.args.get('q', '') }}">
+                        <button class="btn btn-sm btn-primary" type="submit">
+                            <i class="bi bi-search"></i>
+                        </button>
+                        {% if request.args.get('q') %}
+                            <a href="/" class="btn btn-sm btn-outline-secondary" title="Limpiar búsqueda">
+                                <i class="bi bi-x-lg"></i>
+                            </a>
+                        {% endif %}
+                    </div>
+                </form>
+
+                <div class="btn-toolbar mb-2 mb-md-0">
+                    <button type="button" class="btn btn-sm btn-primary text-white" data-bs-toggle="modal" data-bs-target="#modalNuevoCliente">
+                        <i class="bi bi-person-plus"></i> Nuevo Cliente
+                    </button>
+                </div>
+            </div>
+
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Empresa / Cliente</th>
+                                    <th>Contacto</th>
+                                    <th>Proyecto Actual</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                                <tbody>
+                                    {% if clientes %}
+                                        {% for cliente in clientes %}
+                                        <tr>
+                                            <td><strong>{{ cliente[2] }}</strong></td> <td>{{ cliente[1] }}</td>                  <td>
+                                                <span class="badge bg-secondary">Proyecto Base</span> 
+                                            </td>
+                                            <td>
+                                                <div class="btn-group">
+                                                    <button class="btn btn-sm btn-outline-primary" title="Ver Detalles">
+                                                        <i class="bi bi-search"></i>
+                                                    </button>
+                                                    <button class="btn btn-sm btn-outline-success" title="Editar">
+                                                        <i class="bi bi-pencil-square"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    {% else %}
+                                        <tr>
+                                            <td colspan="4" class="text-center text-muted">No hay clientes registrados en la base de datos.</td>
+                                        </tr>
+                                    {% endif %}
+                                </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<div class="modal fade" id="modalNuevoCliente" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+    <div class="modal-dialog shadow-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="modalLabel">
+                    <i class="bi bi-person-plus-fill me-2"></i>Registrar Nuevo Cliente
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="/guardar_cliente" method="POST">
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Nombre de la Empresa</label>
+                        <input type="text" name="empresa" class="form-control" placeholder="Ej: Constructora ABC" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Nombre del Contacto</label>
+                        <input type="text" name="nombre" class="form-control" placeholder="Ej: Juan Pérez" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Correo Electrónico</label>
+                        <input type="email" name="email" class="form-control" placeholder="juan@empresa.cl">
+                    </div>
+                </div>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary px-4">Guardar Cliente</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>
