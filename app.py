@@ -1,42 +1,52 @@
 from flask import Flask, render_template, request
 # Importamos la clase de tu archivo crm_backend.py
 from crm_backend import GestorClientes 
+from flask import Flask, render_template, request, redirect, url_for # Agregamos redirect y url_for
 
 app = Flask(__name__)
 
 @app.route('/')
 def inicio():
-    # Capturamos lo que viene de la barra de búsqueda (si existe)
     termino_busqueda = request.args.get('q', '')
     
+    # Valor de la UF (puedes actualizarlo según el valor real de hoy)
+    uf_del_dia = "38.450,21" 
+    
     try:
-        # Pasamos el filtro a tu método listar que ya lo soporta
         datos_clientes = GestorClientes.listar(filtro=termino_busqueda)
     except Exception as e:
-        print(f"Error al buscar: {e}")
+        print(f"Error: {e}")
         datos_clientes = []
     
     return render_template('index.html', 
                            nombre_usuario="Claudio", 
-                           clientes=datos_clientes)
+                           clientes=datos_clientes,
+                           valor_uf=uf_del_dia) # <-- Pasamos la variable aquí
 
-from flask import Flask, render_template, request, redirect, url_for # Agregamos redirect y url_for
-
-# ... (tus otras rutas)
-
-@app.route('/guardar_cliente', methods=['POST'])
-def guardar_cliente():
+@app.route('/procesar_cliente', methods=['POST'])
+def procesar_cliente():
+    # Capturamos todos los campos del formulario
+    id_cliente = request.form.get('id_cliente')  # Este vendrá del modal de edición
     empresa = request.form.get('empresa')
     nombre = request.form.get('nombre')
-    email = request.form.get('email')  # <-- Agregamos esta línea
+    email = request.form.get('email')
     
     try:
-        # Ahora enviamos los 3 datos a la función guardar
-        exito = GestorClientes.guardar(nombre, empresa, email) 
+        # LÓGICA DE RECICLAJE:
+        if id_cliente:
+            # Si tiene ID, es un cliente que ya existe -> ACTUALIZAMOS
+            exito = GestorClientes.actualizar(id_cliente, nombre, empresa, email)
+            accion = "Actualizado"
+        else:
+            # Si no tiene ID, es uno nuevo -> GUARDAMOS
+            exito = GestorClientes.guardar(nombre, empresa, email)
+            accion = "Guardado"
+
         if exito:
-            print(f"✅ Guardado: {nombre} ({email})")
+            print(f"✅ {accion}: {nombre} ({empresa})")
+            
     except Exception as e:
-        print(f"⚠️ Error: {e}")
+        print(f"⚠️ Error en el procesamiento: {e}")
     
     return redirect(url_for('inicio'))
 

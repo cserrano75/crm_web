@@ -61,11 +61,13 @@ class GestorClientes:
         return None
 
     @staticmethod
-    def actualizar(id_cliente, nombre, empresa):
+    def actualizar(id_cliente, nombre, empresa, email):
         con = obtener_conexion()
         if con:
             cursor = con.cursor()
-            cursor.execute("UPDATE clientes SET nombre=%s, empresa=%s WHERE id=%s", (nombre, empresa, id_cliente))
+            # Usamos el ID para saber exactamente a quién modificar
+            sql = "UPDATE clientes SET nombre=%s, empresa=%s, email=%s WHERE id=%s"
+            cursor.execute(sql, (nombre, empresa, email, id_cliente))
             con.commit()
             con.close()
             return True
