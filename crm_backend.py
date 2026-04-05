@@ -15,11 +15,11 @@ class GestorClientes:
         
         if filtro:
             # Buscamos coincidencias en nombre O empresa
-            query = "SELECT id, nombre, empresa FROM clientes WHERE nombre LIKE %s OR empresa LIKE %s"
-            val = (f"%{filtro}%", f"%{filtro}%")
+            query = "SELECT id, nombre, empresa, email FROM clientes WHERE nombre LIKE %s OR empresa LIKE %s"
+            val = (f"%{filtro}%", f"%{filtro}%", f"%{filtro}%")
             cursor.execute(query, val)
         else:
-            cursor.execute("SELECT id, nombre, empresa FROM clientes")
+            cursor.execute("SELECT id, nombre, empresa, email FROM clientes")
             
         datos = cursor.fetchall()
         con.close()
@@ -64,13 +64,18 @@ class GestorClientes:
     def actualizar(id_cliente, nombre, empresa, email):
         con = obtener_conexion()
         if con:
-            cursor = con.cursor()
-            # Usamos el ID para saber exactamente a quién modificar
-            sql = "UPDATE clientes SET nombre=%s, empresa=%s, email=%s WHERE id=%s"
-            cursor.execute(sql, (nombre, empresa, email, id_cliente))
-            con.commit()
-            con.close()
-            return True
+            try:
+                cursor = con.cursor()
+                # La clave aquí es el WHERE id = %s para no pisar a otros clientes
+                sql = "UPDATE clientes SET nombre=%s, empresa=%s, email=%s WHERE id=%s"
+                cursor.execute(sql, (nombre, empresa, email, id_cliente))
+                con.commit()
+                return True
+            except Exception as e:
+                print(f"Error al actualizar: {e}")
+                return False
+            finally:
+                con.close()
         return False
     
     @staticmethod

@@ -25,29 +25,19 @@ def inicio():
 
 @app.route('/procesar_cliente', methods=['POST'])
 def procesar_cliente():
-    # Capturamos todos los campos del formulario
-    id_cliente = request.form.get('id_cliente')  # Este vendrá del modal de edición
-    empresa = request.form.get('empresa')
+    # Recibimos los datos del formulario (vengan del modal "Nuevo" o "Detalles")
+    id_cliente = request.form.get('id_cliente') 
     nombre = request.form.get('nombre')
+    empresa = request.form.get('empresa')
     email = request.form.get('email')
-    
-    try:
-        # LÓGICA DE RECICLAJE:
-        if id_cliente:
-            # Si tiene ID, es un cliente que ya existe -> ACTUALIZAMOS
-            exito = GestorClientes.actualizar(id_cliente, nombre, empresa, email)
-            accion = "Actualizado"
-        else:
-            # Si no tiene ID, es uno nuevo -> GUARDAMOS
-            exito = GestorClientes.guardar(nombre, empresa, email)
-            accion = "Guardado"
 
-        if exito:
-            print(f"✅ {accion}: {nombre} ({empresa})")
-            
-    except Exception as e:
-        print(f"⚠️ Error en el procesamiento: {e}")
-    
+    if id_cliente:
+        # Si hay ID, estamos EDITANDO
+        GestorClientes.actualizar(id_cliente, nombre, empresa, email)
+    else:
+        # Si NO hay ID, estamos CREANDO
+        GestorClientes.guardar(nombre, empresa, email)
+
     return redirect(url_for('inicio'))
 
 if __name__ == '__main__':
