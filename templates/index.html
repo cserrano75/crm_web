@@ -9,20 +9,45 @@
     
     <style>
         body { background-color: #f8f9fa; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        /* Estilo para el menú lateral (Sidebar) */
-        .sidebar { min-height: 100vh; background-color: #212529; color: white; }
+        .sidebar { min-height: 100vh; background-color: #212529; color: white; transition: all 0.3s; }
         .nav-link { color: rgba(255,255,255,.75); transition: 0.3s; }
         .nav-link:hover { color: white; background-color: rgba(255,255,255,.1); }
         .nav-link.active { color: white; background-color: #0d6efd; }
+
+        /* Ajustes para Celular */
+        @media (max-width: 767.98px) {
+            .sidebar {
+                position: absolute;
+                z-index: 1000;
+                width: 100%;
+                min-height: auto;
+                box-shadow: 0 10px 15px rgba(0,0,0,0.3);
+            }
+            main { padding-top: 20px; }
+        }
+        
+        /* En PC siempre mostramos el sidebar */
+        @media (min-width: 768px) {
+            #sidebarMenu { display: block !important; }
+        }
     </style>
 </head>
 <body>
 
+    <nav class="navbar navbar-dark bg-dark d-md-none">
+        <div class="container-fluid">
+            <span class="navbar-brand mb-0 h1"><i class="bi bi-factory"></i> CRM Gestión</span>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+        </div>
+    </nav>
+
 <div class="container-fluid">
     <div class="row">
-        <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse p-3">
-            <h4 class="text-center mb-4"><i class="bi bi-factory"></i> CRM de Gestión</h4>
-            <hr>
+        <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block sidebar collapse p-3">
+            <h4 class="text-center mb-4 d-none d-md-block"><i class="bi bi-factory"></i> CRM de Gestión</h4>
+            <hr class="d-none d-md-block">
             <ul class="nav flex-column gap-2">
                 <li class="nav-item">
                     <a class="nav-link active rounded" href="#"><i class="bi bi-people me-2"></i> Clientes</a>
@@ -32,23 +57,19 @@
                         <i class="bi bi-calculator me-2"></i> Calculadora UF
                     </a>
                 </li>
-                <a href="/descargar_reporte" class="btn btn-outline-primary">
-                    <i class="bi bi-file-earmark-pdf"></i> Descargar Reporte PDF
-                </a>
+                <li class="nav-item mt-2">
+                    <a href="/descargar_reporte" class="btn btn-outline-primary w-100">
+                        <i class="bi bi-file-earmark-pdf"></i> Reporte PDF
+                    </a>
+                </li>
             </ul>
 
             <div class="mt-5 p-3 rounded bg-dark border border-secondary shadow-sm">
                 <p class="text-white-50 small mb-1 text-uppercase text-center" style="font-size: 0.7rem; letter-spacing: 1px;">
                     VALOR UF HOY
                 </p>
-                
-                <h5 class="text-center text-info mb-0 fw-bold">
-                    $ {{ valor_uf }}
-                </h5>
-                
-                <p class="text-center text-secondary mb-0" style="font-size: 0.6rem;">
-                    Actualizado: 2026-04-04
-                </p>
+                <h5 class="text-center text-info mb-0 fw-bold">$ {{ valor_uf }}</h5>
+                <p class="text-center text-secondary mb-0" style="font-size: 0.6rem;">Actualizado: 2026-04-04</p>
             </div>
         </nav>
 
