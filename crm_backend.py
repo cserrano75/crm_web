@@ -1,11 +1,28 @@
-import matplotlib.pyplot as plt #<--- NUEVO: Para los gráficos
+import mysql.connector
 import os
 from datetime import datetime # <--- NUEVO IMPORT para la fecha
 from fpdf import FPDF
-from database import obtener_conexion
+from dotenv import load_dotenv
 import pandas as pd # Para el Excel
 import requests # <--- Nuevo Import
 
+# 1. Cargamos el archivo .env apenas arranca el script
+load_dotenv(override=True)
+
+# 2. Definimos la conexión aquí mismo para que no sea un "fantasma"
+def obtener_conexion():
+    """Conecta a la BD usando las variables del .env en la raíz"""
+    try:
+        return mysql.connector.connect(
+            host=os.getenv('DB_HOST'),
+            user=os.getenv('DB_USER'),
+            password=os.getenv('DB_PASSWORD'),
+            database=os.getenv('DB_NAME')
+        )
+    except Exception as e:
+        print(f"❌ Error de conexión: {e}")
+        return None
+    
 class GestorClientes:
     """Clase encargada EXCLUSIVAMENTE de hablar con MySQL"""
     @staticmethod
