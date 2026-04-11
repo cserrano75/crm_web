@@ -5,6 +5,7 @@ from fpdf import FPDF
 from dotenv import load_dotenv
 import pandas as pd # Para el Excel
 import requests # <--- Nuevo Import
+import matplotlib.pyplot as plt
 
 # 1. Cargamos el archivo .env apenas arranca el script
 load_dotenv(override=True)
@@ -99,7 +100,15 @@ class GestorClientes:
     def generar_reporte_pdf(nombre_archivo="Reporte_Clientes.pdf"):
         try:
             # 1. Preparar Datos Dinámicos
-            clientes = GestorClientes.listar()
+            # clientes = GestorClientes.listar()
+
+            # Traemos explícitamente solo 3 columnas para que el bucle no se rompa
+            con = obtener_conexion()
+            cursor = con.cursor()
+            cursor.execute("SELECT id, nombre, empresa FROM clientes")
+            clientes = cursor.fetchall()
+            con.close()
+
             fecha_actual = datetime.now().strftime("%d/%m/%Y") # Formato: DD/MM/AAAA HH:MM
             ruta_logo = "logo_empresa.png" # <--- Ruta relativa (dinámica por archivo)
             

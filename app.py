@@ -2,6 +2,7 @@ from flask import Flask, render_template, request
 # Importamos la clase de tu archivo crm_backend.py
 from crm_backend import GestorClientes 
 from flask import Flask, render_template, request, redirect, url_for # Agregamos redirect y url_for
+from flask import send_file
 
 app = Flask(__name__)
 
@@ -58,6 +59,16 @@ def calcular_uf():
     # Por ahora lo imprimimos en consola para probar, luego lo llevamos al HTML
     print(f"Calculando: {monto_pesos} pesos son {resultado_final} UF")
     return redirect(url_for('inicio'))
+
+@app.route('/descargar_reporte')
+def descargar_reporte():
+    nombre_pdf = "Reporte_Clientes.pdf"
+    exito = GestorClientes.generar_reporte_pdf(nombre_pdf)
+    
+    if exito:
+        return send_file(nombre_pdf, as_attachment=True)
+    else:
+        return "Error al generar el reporte", 500
 
 if __name__ == '__main__':
     # El debug=True es vital para ver los errores en pantalla
