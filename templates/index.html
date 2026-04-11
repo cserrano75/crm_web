@@ -28,7 +28,9 @@
                     <a class="nav-link active rounded" href="#"><i class="bi bi-people me-2"></i> Clientes</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link rounded" href="#"><i class="bi bi-calculator me-2"></i> Calculadora UF</a>
+                    <a class="nav-link rounded" href="#" data-bs-toggle="modal" data-bs-target="#modalCalculadora">
+                        <i class="bi bi-calculator me-2"></i> Calculadora UF
+                    </a>
                 </li>
             </ul>
 
@@ -194,8 +196,36 @@
     </div>
 </div>
 
+<div class="modal fade" id="modalCalculadora" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-info text-dark">
+                <h5 class="modal-title"><i class="bi bi-calculator me-2"></i>Calculadora de Presupuesto</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Monto en Pesos (CLP)</label>
+                    <input type="number" id="calc-pesos" class="form-control form-control-lg" placeholder="Ej: 1500000">
+                </div>
+                <div class="text-center my-3">
+                    <i class="bi bi-arrow-down-up fs-3 text-muted"></i>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Resultado en UF</label>
+                    <input type="text" id="calc-uf" class="form-control form-control-lg bg-light text-primary fw-bold" readonly>
+                </div>
+                <p class="text-muted small">Valor utilizado: <strong>$ {{ valor_uf }}</strong></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
 
     <script>
         const modalDetalles = document.getElementById('modalDetallesCliente');
@@ -213,7 +243,28 @@
             document.getElementById('det-nombre').value = nombre;
             document.getElementById('det-empresa').value = empresa;
             document.getElementById('det-email').value = email;
+
+            // Agregamos la funcionalidad de calculo de la UF
+            const inputPesos = document.getElementById('calc-pesos');
+            const inputUF = document.getElementById('calc-uf');
+
+            // Valor de la UF que viene desde Python (quitamos el punto de miles y cambiamos coma por punto)
+            const valorUFActual = parseFloat("{{ valor_uf }}".replace(/\./g, '').replace(',', '.'));
+
+            inputPesos.addEventListener('input', function() {
+                const pesos = parseFloat(this.value);
+                if (!isNaN(pesos) && pesos > 0) {
+                    const resultado = pesos / valorUFActual;
+                    inputUF.value = resultado.toLocaleString('es-CL', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + " UF";
+                } else {
+                    inputUF.value = "";
+                }
+            });
+
+            //
         });
     </script>
 </body>
+
+
 </html>

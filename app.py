@@ -40,6 +40,25 @@ def procesar_cliente():
 
     return redirect(url_for('inicio'))
 
+@app.route('/calcular_uf', methods=['POST'])
+def calcular_uf():
+    # El valor de la UF que ya tienes definido (limpiamos puntos y comas para operar)
+    valor_uf_limpio = 38450.21  
+    
+    monto_pesos = request.form.get('pesos', 0)
+    
+    try:
+        # Convertimos a float para poder dividir
+        resultado_uf = float(monto_pesos) / valor_uf_limpio
+        # Redondeamos a 2 decimales, como se usa en minería
+        resultado_final = round(resultado_uf, 2)
+    except:
+        resultado_final = 0
+
+    # Por ahora lo imprimimos en consola para probar, luego lo llevamos al HTML
+    print(f"Calculando: {monto_pesos} pesos son {resultado_final} UF")
+    return redirect(url_for('inicio'))
+
 if __name__ == '__main__':
     # El debug=True es vital para ver los errores en pantalla
     app.run(debug=True)
